@@ -11,11 +11,12 @@ class Bar:
 
         self.bar = Rect(0, 3 * bar_height, bar_width, bar_height)
         self.button = Rect(0, 0, 50, 25)
+        self.padding = Rect(0, 0, 1, 1)
 
         self.across = self.down = 0
 
-        self.width = bar_width / self.button.width
-        self.height = bar_height / self.button.height
+        self.width = bar_width / (self.button.width + self.padding.width)
+        self.height = bar_height / (self.button.height + self.padding.width)
 
         self.buttons = []
 
@@ -31,13 +32,13 @@ class Bar:
         if self.down == self.height:
             assert False, "The button bar needs to be made larger."
 
-        self.across += 1
-
-        x = 50 * self.across + self.bar.x
-        y = 25 * self.down + self.bar.y
+        x = (self.button.width + self.padding.width) * self.across + self.bar.x
+        y = (self.button.height + self.padding.height) * self.down + self.bar.y
 
         button.shape = self.button.move(x, y)
         self.buttons.append(button)
+
+        self.across += 1
 
     def update(self, event):
         clicked = []
@@ -90,9 +91,12 @@ class Button:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.shape)
-
         text = self.font.render(self.name, True, Button.TEXT)
-        screen.blit(text, self.shape)
+
+        outline = text.get_bounding_rect()
+        outline.center = self.shape.center
+
+        screen.blit(text, outline)
 
 if __name__ == "__main__":
     pygame.init()
@@ -101,8 +105,8 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(size)
 
     bar = Bar(screen)
-    hello = Button(bar, "Hello")
-    world = Button(bar, "World")
+    for index in range(10):
+        Button(bar, "Button %d" % (index + 1))
 
     while True:
         for event in pygame.event.get():
@@ -110,12 +114,8 @@ if __name__ == "__main__":
                 sys.exit(0)
 
             if event.type in bar.EVENTS:
-                clicked = bar.update(event)
-
-                if hello in clicked:
-                    print "Hello"
-                if world in clicked:
-                    print "World"
+                for button in bar.update(event):
+                    print button.name
 
         bar.draw(screen)
 
