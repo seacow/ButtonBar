@@ -56,6 +56,9 @@ class Bar:
         for button in self:
             button.draw(screen)
 
+    def hide(self, button):
+        self.buttons.remove(button)
+
 class Button:
 
     NORMAL = Color(255, 0, 0)   # Red
@@ -98,6 +101,9 @@ class Button:
 
         screen.blit(text, outline)
 
+    def hide(self):
+        self.bar.hide(self)
+
 if __name__ == "__main__":
     pygame.init()
 
@@ -109,6 +115,8 @@ if __name__ == "__main__":
         Button(bar, "Button %d" % (index + 1))
 
     while True:
+        screen.fill((0,0,0))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
