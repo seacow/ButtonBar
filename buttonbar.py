@@ -66,9 +66,10 @@ class Button:
     DOWN = Color(0, 0, 255)     # Blue
     TEXT = Color(0, 0, 0)       # Black
 
-    def __init__(self, bar, name):
+    def __init__(self, bar, name, function=lambda : None):
         self.bar = bar
         self.name = name
+        self.function = function
 
         self.shape = None
         self.color = Button.NORMAL
@@ -91,6 +92,7 @@ class Button:
             self.color = Button.DOWN
         if event == MOUSEBUTTONUP:
             self.color = Button.OVER
+            self.function()
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.shape)
